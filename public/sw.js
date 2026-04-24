@@ -1,4 +1,4 @@
-const CACHE_NAME = 'medtracker-cache-v1';
+const CACHE_NAME = 'medtracker-cache-v2';
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -16,10 +16,29 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(self.clients.claim());
+  e.waitUntil(
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    }).then(() => self.clients.claim())
+  );
 });
 
 self.addEventListener('fetch', (e) => {
+  // Use a network-first strategy for the main page to ensure we always try to get the latest,
+  // falling back to cache if offline.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match(e.request))
+    );
+    return;
+  }
+  
   e.respondWith(
     caches.match(e.request).then((response) => {
       return response || fetch(e.request);

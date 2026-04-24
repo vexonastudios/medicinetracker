@@ -470,6 +470,36 @@ export default function Home() {
               <button className="btn btn-success" onClick={handleAddMed} style={{ marginTop: '8px' }}>+ Add to Schedule</button>
             </div>
           </div>
+
+          <div className="glass-panel" style={{ padding: '20px' }}>
+            <h2 style={{ fontSize: '1.2rem', marginBottom: '12px', color: 'var(--danger)' }}>App Maintenance</h2>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '16px', lineHeight: '1.5' }}>
+              If the app feels stuck or isn't receiving the latest updates, tap this button to forcefully clear the local cache and fetch the newest version.
+            </p>
+            <button 
+              className="btn btn-ghost" 
+              style={{ width: '100%', border: '1px solid var(--danger)', color: 'var(--danger)' }} 
+              onClick={() => {
+                if ('serviceWorker' in navigator) {
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for(let registration of registrations) {
+                      registration.unregister();
+                    }
+                  });
+                }
+                if ('caches' in window) {
+                  caches.keys().then((names) => {
+                    for (let name of names) {
+                      caches.delete(name);
+                    }
+                  });
+                }
+                setTimeout(() => window.location.reload(), 500);
+              }}
+            >
+              🔄 Force App Update
+            </button>
+          </div>
         </div>
       )}
     </>
