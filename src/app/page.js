@@ -146,11 +146,16 @@ export default function Home() {
     .filter(g => !g.status.allTaken);
 
   let nextGroup = null;
+  let laterGroups = [];
   if (pendingGroups.length > 0) {
     // Sort by diffMins ascending. The most negative (most overdue) comes first. 
     // If none are overdue, the one with the smallest positive diffMins (closest upcoming) comes first.
     pendingGroups.sort((a, b) => a.status.diffMins - b.status.diffMins);
     nextGroup = pendingGroups[0];
+    // Keep the rest so we can show a summary
+    laterGroups = pendingGroups.slice(1);
+    // Sort laterGroups chronologically for the summary
+    laterGroups.sort((a, b) => a.time.localeCompare(b.time));
   }
 
   return (
@@ -288,6 +293,24 @@ export default function Home() {
               </div>
             );
           })()}
+
+          {/* UPCOMING LATER SUMMARY */}
+          {laterGroups.length > 0 && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '10px' }}>
+              <h3 style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '1px', marginBottom: '4px' }}>
+                Coming Up Later
+              </h3>
+              {laterGroups.map(group => {
+                const names = groupedSchedule[group.time].map(i => i.med.name).join(', ');
+                return (
+                  <div key={group.time} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--border-color)', borderRadius: '12px', padding: '12px 16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <span style={{ fontWeight: '500', color: 'var(--text-main)', fontSize: '0.95rem' }}>{formatTime(group.time)}</span>
+                    <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textAlign: 'right', maxWidth: '65%', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{names}</span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
           {/* AS NEEDED SECTION */}
           {groupedSchedule['As Needed'] && (
