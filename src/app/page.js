@@ -231,9 +231,6 @@ export default function Home() {
                     <span style={{ background: 'var(--accent-primary)', padding: '4px 10px', borderRadius: '8px', fontSize: '0.9rem', color: '#fff' }}>Next Up</span>
                     {formatTime(time)}
                   </span>
-                  <span style={{ fontSize: '0.9rem', color: bannerColor, fontWeight: '600' }}>
-                    {bannerText}
-                  </span>
                 </h2>
                 
                 {items.map((item, index) => {
@@ -262,6 +259,16 @@ export default function Home() {
                         <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
                           {med.dosage}
                         </p>
+                        {!taken && (
+                          <div style={{ marginTop: '6px', fontSize: '0.85rem', color: bannerColor, fontWeight: '500' }}>
+                            {bannerText}
+                          </div>
+                        )}
+                        {taken && (
+                          <div style={{ marginTop: '6px', fontSize: '0.85rem', color: 'var(--success)', fontWeight: '500' }}>
+                            ✓ Taken for {formatTime(time)}
+                          </div>
+                        )}
                       </div>
                       {taken ? (
                         <button className="btn btn-success" disabled style={{ opacity: 0.8, cursor: 'default' }}>
