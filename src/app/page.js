@@ -45,6 +45,11 @@ export default function Home() {
       setLogs(JSON.parse(savedLogs));
     }
     
+    // Register PWA service worker
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(console.error);
+    }
+
     setCurrentTime(getCSTDate());
     const clockInterval = setInterval(() => {
       setCurrentTime(getCSTDate());
